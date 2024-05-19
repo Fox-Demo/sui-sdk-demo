@@ -5,6 +5,9 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 import { Inputs } from "@mysten/sui.js/transactions";
 import * as dotenv from "dotenv";
+import { bcs } from "@mysten/sui.js/bcs";
+
+dotenv.config();
 
 const TREASURY_CAP_ID =
   "0x598287d9e2b7e46fa40cd4f94663e86b27b188e178b23a68dd6ef1a3a966a779";
@@ -46,6 +49,7 @@ export async function mint() {
   console.log(result);
 }
 
+//Get total supply by sui::coin::total_supply
 async function totalSupply() {
   const suiClient = new SuiClient({ url: getFullnodeUrl("devnet") });
   const txb = new TransactionBlock();
@@ -66,20 +70,23 @@ async function totalSupply() {
 
   //Build txb
   const treasuryCapRef = Inputs.ObjectRef(treasuryCap!);
-  const balance = txb.moveCall({
+  txb.moveCall({
     arguments: [txb.object(treasuryCapRef)],
     typeArguments: [TREASURY_TYPE],
     target: `0x2::coin::total_supply`,
   });
-  console.log(balance);
 
-  //Dry run
-  txb.setSender(keypair.toSuiAddress());
-  const _txb = await txb.build({ client: suiClient });
-  const result = await suiClient.dryRunTransactionBlock({
-    transactionBlock: _txb,
+  //Dev inspect
+  const result = await suiClient.devInspectTransactionBlock({
+    sender: keypair.toSuiAddress(),
+    transactionBlock: txb,
   });
-  console.log(result);
+
+  const { results } = result;
+  if (results && results[0].returnValues) {
+    const [value] = results[0].returnValues[0];
+    console.log(bcs["u64"]().parse(new Uint8Array(value)));
+  }
 }
 
 totalSupply();
