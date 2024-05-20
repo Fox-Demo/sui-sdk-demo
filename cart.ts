@@ -34,6 +34,7 @@ export async function mint() {
 
   //Build transaction block
   const treasuryCapRef = Inputs.ObjectRef(treasuryCap!);
+
   const mintObject = txb.moveCall({
     arguments: [txb.object(treasuryCapRef), txb.pure.u64(MIST_PER_SUI)],
     typeArguments: [TREASURY_TYPE],
@@ -89,4 +90,4 @@ async function totalSupply() {
   }
 }
 
-totalSupply();
+mint();
