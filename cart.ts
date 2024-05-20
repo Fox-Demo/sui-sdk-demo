@@ -4,9 +4,9 @@ import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 import { Inputs } from "@mysten/sui.js/transactions";
-import * as dotenv from "dotenv";
 import { bcs } from "@mysten/sui.js/bcs";
 
+import * as dotenv from "dotenv";
 dotenv.config();
 
 const TREASURY_CAP_ID =
